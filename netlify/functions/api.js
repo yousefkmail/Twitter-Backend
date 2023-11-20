@@ -17,6 +17,9 @@ const router = express.Router();
 app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
+router.get("/", (req, res) => {
+  res.status(200).json({});
+});
 ConnectToFirebase();
 app.use(cors());
 app.use(express.json());
