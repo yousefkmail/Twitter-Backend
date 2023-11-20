@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
-
+const User = require("../Models/UserModel");
 const Schema = mongoose.Schema;
 
 const tweetSchema = new Schema(
   {
     publisherId: {
       type: mongoose.Types.ObjectId,
-      ref: "User",
       required: true,
     },
     contentText: {
@@ -37,6 +36,7 @@ tweetSchema.virtual("publisher", {
   ref: "User",
   localField: "publisherId",
   foreignField: "_id",
+  justOne: true,
 });
 
 module.exports = mongoose.model("Tweet", tweetSchema);

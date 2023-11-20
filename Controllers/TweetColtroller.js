@@ -87,22 +87,13 @@ const DeleteTweet = async (req, res) => {
 
 const getTweets = async (req, res) => {
   try {
-    const tweets = await TweetModel.find({}).populate("publisherId");
+    const tweets = await TweetModel.find().populate({
+      path: "publisher",
+      select: "_id name email icon",
+    });
+    const tweetsarray = tweets.map((r) => r.toObject({ virtuals: true }));
 
-    console.log(tweets);
-    // for (i = 0; i < tweets.length; i++) {
-    //   array.push({
-    //     ...tweets[i].toObject(),
-
-    //     Publisher: {
-    //       Icon: user.icon,
-    //       Id: user._id,
-    //       Name: user.name,
-    //     },
-    //   });
-    // }
-
-    res.status(200).json({ tweets: [] });
+    res.status(200).json({ tweets: tweetsarray });
   } catch (Error) {
     res.status(400).json({ Error: Error });
   }
