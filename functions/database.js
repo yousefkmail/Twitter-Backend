@@ -1,7 +1,6 @@
-const { json } = require("express");
 const mongoose = require("mongoose");
 
-connectToDb = async function () {
+exports.handler = async function (event, context) {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
@@ -32,4 +31,3 @@ connectToDb = async function () {
       };
     });
 };
-module.exports.handler = connectToDb;
