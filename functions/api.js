@@ -26,4 +26,4 @@ app.use("/api/trend", TrendRouter);
 app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
 
-module.exports.handle = serverless(app);
+module.exports.handler = serverless(app);
