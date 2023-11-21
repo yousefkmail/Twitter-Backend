@@ -11,12 +11,37 @@ const fileupload = require("express-fileupload");
 const serverless = require("serverless-http");
 const { ConnectToFirebase } = require("../Firebase/storageManipulation");
 const app = express();
+const mongoose = require("mongoose");
 const socket = require("socket.io");
 const connecttodb = require("../database");
 app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Connected to database");
+
+    // TODO:: Websocket
+    // const io = socket(3000, {
+    //   cors: {
+    //     origin: ["http://localhost:5173"],
+    //   },
+    // });
+    // io.on("connection", (sockett) => {
+    //   console.log(sockett.handshake.auth.token);
+
+    //   sockett.on("custom-event", (string) => {
+    //     console.log(sockett.handshake.auth.token);
+    //   });
+    // });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
 app.use(cors());
 app.use(express.json());
 app.use("/api/user", UserRouter);
