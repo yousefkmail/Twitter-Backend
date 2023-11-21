@@ -18,14 +18,13 @@ app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
-// app.use(async (req, res, next) => {
-//   if (mongoose.STATES.disconnected)
-//     await mongoose.connect(process.env.MONGO_URI).then(() => {
-//       console.log("Connected to db");
-//     });
+app.use(async (req, res, next) => {
+  await mongoose.connect(process.env.MONGO_URI).then(() => {
+    console.log("Connected to db");
+  });
 
-//   next();
-// });
+  next();
+});
 
 mongoose.connect(process.env.MONGO_URI);
 
