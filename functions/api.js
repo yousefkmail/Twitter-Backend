@@ -18,12 +18,11 @@ app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
-try {
-  await mongoose.connect(process.env.MONGO_URI);
-  console.log("Connected to database");
-} catch (e) {
-  console.log(e.message);
-}
+
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log("Connected to db");
+});
+
 // TODO:: Websocket
 // const io = socket(3000, {
 //   cors: {
@@ -47,4 +46,9 @@ app.use("/api/trend", TrendRouter);
 app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
 
-module.exports.handler = serverless(app);
+const handler = serverless(app);
+
+module.exports.handler = async (event, context) => {
+  const result = await handler(event, context);
+  return result;
+};
