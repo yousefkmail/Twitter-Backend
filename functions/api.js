@@ -18,13 +18,16 @@ app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
-app.use(async (req, res, next) => {
-  if (mongoose.STATES.disconnected)
-    await mongoose.connect(process.env.MONGO_URI).then(() => {
-      console.log("Connected to db");
-    });
-  next();
-});
+// app.use(async (req, res, next) => {
+//   if (mongoose.STATES.disconnected)
+//     await mongoose.connect(process.env.MONGO_URI).then(() => {
+//       console.log("Connected to db");
+//     });
+
+//   next();
+// });
+
+mongoose.connect(process.env.MONGO_URI);
 
 // TODO:: Websocket
 // const io = socket(3000, {
@@ -49,6 +52,7 @@ app.use("/api/trend", TrendRouter);
 app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
 
+console.log("Connected to db");
 const handler = serverless(app);
 
 module.exports.handler = async (event, context) => {

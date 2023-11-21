@@ -4,6 +4,7 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const Login = async (req, res) => {
+  console.log("logging in");
   const { email, password } = req.body;
 
   try {
