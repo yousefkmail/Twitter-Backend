@@ -26,8 +26,6 @@ app.use(async (req, res, next) => {
   next();
 });
 
-mongoose.connect(process.env.MONGO_URI);
-
 // TODO:: Websocket
 // const io = socket(3000, {
 //   cors: {
