@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "./netlify/functions/api.js",
-    "build": "./functions/api.js",
+    "build": "Node ./functions/api.js",
     "dev": "nodemon ./functions/api.js"
   },
   "keywords": [],
