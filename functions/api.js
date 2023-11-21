@@ -25,11 +25,15 @@ app.use("/api/tweet", TweetRouter);
 app.use("/api/trend", TrendRouter);
 app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
+
+const handler = async () => {};
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("Connected to database");
-    //TODO:: Websocket
+    return serverless(app);
+    // TODO:: Websocket
     // const io = socket(3000, {
     //   cors: {
     //     origin: ["http://localhost:5173"],
@@ -45,6 +49,7 @@ mongoose
   })
   .catch((error) => {
     console.log(error);
+    return null;
   });
 
 module.exports.handler = serverless(app);
