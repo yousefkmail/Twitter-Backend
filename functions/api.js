@@ -18,29 +18,25 @@ app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
+try {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("Connected to database");
+} catch (e) {
+  console.log(e.message);
+}
+// TODO:: Websocket
+// const io = socket(3000, {
+//   cors: {
+//     origin: ["http://localhost:5173"],
+//   },
+// });
+// io.on("connection", (sockett) => {
+//   console.log(sockett.handshake.auth.token);
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Connected to database");
-
-    // TODO:: Websocket
-    // const io = socket(3000, {
-    //   cors: {
-    //     origin: ["http://localhost:5173"],
-    //   },
-    // });
-    // io.on("connection", (sockett) => {
-    //   console.log(sockett.handshake.auth.token);
-
-    //   sockett.on("custom-event", (string) => {
-    //     console.log(sockett.handshake.auth.token);
-    //   });
-    // });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+//   sockett.on("custom-event", (string) => {
+//     console.log(sockett.handshake.auth.token);
+//   });
+// });
 
 app.use(cors());
 app.use(express.json());
