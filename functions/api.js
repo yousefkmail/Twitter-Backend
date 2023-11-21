@@ -53,9 +53,5 @@ app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
 
 console.log("Connected to db");
-const handler = serverless(app);
 
-module.exports.handler = async (event, context) => {
-  const result = await handler(event, context);
-  return result;
-};
+module.exports.handler = serverless(app);
