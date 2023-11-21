@@ -11,11 +11,12 @@ const fileupload = require("express-fileupload");
 const { ConnectToFirebase } = require("../Firebase/storageManipulation");
 const app = express();
 const socket = require("socket.io");
-const serverless = require("serverless-http");
+const connecttodb = require("../database");
 app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
+connecttodb();
 app.use(cors());
 app.use(express.json());
 app.use("/api/user", UserRouter);

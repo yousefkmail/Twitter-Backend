@@ -1,14 +1,11 @@
 const mongoose = require("mongoose");
 
-exports.handler = async function (event, context) {
+connectToDb = async function () {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
       console.log("Connected to database");
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: "Connected to MongoDB" }),
-      };
+
       // TODO:: Websocket
       // const io = socket(3000, {
       //   cors: {
@@ -25,9 +22,6 @@ exports.handler = async function (event, context) {
     })
     .catch((error) => {
       console.log(error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ message: "Internal Server Error" }),
-      };
     });
 };
+module.exports = connectToDb;
