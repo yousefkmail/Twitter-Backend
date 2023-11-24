@@ -13,17 +13,11 @@ const { ConnectToFirebase } = require("../Firebase/storageManipulation");
 const app = express();
 const mongoose = require("mongoose");
 const socket = require("socket.io");
+const connecttodb = require("../database");
 app.use(fileupload({ createParentPath: true }), (req, res, next) => {
   next();
 });
 ConnectToFirebase();
-app.use(async (req, res, next) => {
-  if (mongoose.connection.readyState !== mongoose.ConnectionStates.connected) {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to dB");
-  }
-  next();
-});
 
 // TODO:: Websocket
 // const io = socket(3000, {
@@ -48,4 +42,13 @@ app.use("/api/trend", TrendRouter);
 app.use("/api/relationship", RelationshipRouter);
 app.use("/api/people", PeopleRouter);
 
-module.exports.handler = serverless(app);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    const server = app.listen(process.env.PORT, () => {
+      console.log("Connected to  DB and listening to port 5000");
+    });
+  })
+  .catch(() => {
+    console.log("Failed to connect to DB");
+  });
