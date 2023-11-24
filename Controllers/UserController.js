@@ -1,5 +1,6 @@
 const user = require("../Models/UserModel");
 const bcrypt = require("bcrypt");
+const FieldError = require("../classes/FieldError");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
@@ -35,27 +36,27 @@ const CreateToken = (_id) => {
 const Signup = async (req, res) => {
   const { email, password, dateOfBirth, name } = req.body;
   try {
-    if (!email || !password) {
-      res.status(400).json({ Error: "All field must be filled" });
-      return;
+    if (!email) {
+      throw new FieldError("email", "Field is required");
+    }
+
+    if (!password) {
+      throw new FieldError("password", "Field is required");
     }
 
     if (!validator.isEmail(email)) {
-      res.status(400).json({ Error: "Email is not valid" });
-      return;
+      throw new FieldError("email", "Not a valid email");
     }
+
     if (!validator.isStrongPassword(password)) {
-      res.status(400).json({ Error: "Password isn't strong enough" });
-      return;
+      throw new FieldError("password", "Password isn't strong enough");
     }
 
     const userTest = await user.findOne({ email });
 
     if (userTest) {
-      res.status(400).json({ Error: "Email already in use" });
-      return;
+      throw new FieldError("email", "email already in use");
     }
-
     if (!dateOfBirth) {
       res.status(400).json({ Error: "Date of brith is required" });
       return;
@@ -74,7 +75,10 @@ const Signup = async (req, res) => {
 
     res.status(200).json({ email, token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.log(error);
+    res
+      .status(400)
+      .json({ Error: { field: error.field, message: error.message } });
   }
 };
 
