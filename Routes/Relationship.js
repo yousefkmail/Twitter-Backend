@@ -40,7 +40,6 @@ router.get("/followings", async (req, res) => {
       .findById(req.user)
       .select("following")
       .populate({ path: "following", select: "_id name email" });
-    console.log(following.following);
 
     res.status(200).json({ following: following.following });
   } catch (e) {

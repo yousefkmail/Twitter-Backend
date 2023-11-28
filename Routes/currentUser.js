@@ -10,7 +10,6 @@ router.get("/current", async (req, res) => {
   const user = req.user;
   const result = await usermodel.findById(req.user).select("-password");
   result.toObject();
-  console.log(result);
   res.status(200).json({ user: { ...result.toObject() } });
 });
 
@@ -30,7 +29,6 @@ router.post("/edit", async (req, res) => {
       );
       data.icon = image;
     }
-    console.log(data);
 
     await usermodel.findOneAndUpdate({ _id: req.user._id }, { ...data });
     res.status(200).json({ ...data });

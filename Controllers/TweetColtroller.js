@@ -43,10 +43,16 @@ const PostNewTweet = async (req, res) => {
         const hashtagnew = await TrendModel.create({ title: array[i] });
       }
     }
+    const tweet = await TweetModel.findOne({ _id: data.id }).populate({
+      path: "publisher",
+      select: "_id name email icon",
+    });
 
-    res.status(200).json({ tweetId: data._id });
+    const newTweet = tweet.toObject({ virtuals: true });
+
+    res.status(200).json({ tweet: newTweet });
   } catch (Error) {
-    res.status(400).json({ Error });
+    res.status(400).json({ Error: Error.message });
   }
 };
 const UpdateTweet = async (req, res, id) => {
@@ -80,22 +86,53 @@ const UpdateTweet = async (req, res, id) => {
 const DeleteTweet = async (req, res) => {
   const { id } = req.params;
 
-  await TweetModel.findOneAndUpdate({ _id: id }, { isDeleted: true });
-
-  res.status(200).json({ msg: "Deleted" });
+  const tweet = await TweetModel.findOneAndUpdate(
+    { _id: id, publisherId: req.user._id },
+    { isDeleted: true }
+  );
+  if (tweet) res.status(200).json({ msg: "Deleted", _id: id });
+  else res.status(400).json({ msg: "No post" });
 };
 
 const getTweets = async (req, res) => {
   try {
-    const tweets = await TweetModel.find().populate({
-      path: "publisher",
-      select: "_id name email icon",
-    });
+    const tweets = await TweetModel.find({ isDeleted: false })
+      .populate({
+        path: "publisher",
+        select: "_id name email icon",
+      })
+      .sort({ createdAt: "desc" });
     const tweetsarray = tweets.map((r) => r.toObject({ virtuals: true }));
 
+    tweetsarray.forEach((tweet) => {
+      tweet.isLiked = tweet.Likes.some((item) => item._id.equals(req.user._id));
+      tweet.likesCount = tweet.Likes.length;
+    });
     res.status(200).json({ tweets: tweetsarray });
   } catch (Error) {
     res.status(400).json({ Error: Error });
+  }
+};
+
+const LikeTweet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tweet = await TweetModel.findOne({ _id: id });
+    await tweet.like(req.user._id);
+    res.status(200).json({});
+  } catch (e) {
+    res.status(400).json({ e: e.message });
+  }
+};
+
+const UnlikeTweet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tweet = await TweetModel.findOne({ _id: id });
+    await tweet.unLike(req.user._id);
+    res.status(200).json({});
+  } catch (e) {
+    res.status(400).json({ e: e.message });
   }
 };
 
@@ -104,4 +141,6 @@ module.exports = {
   UpdateTweet,
   DeleteTweet,
   getTweets,
+  LikeTweet,
+  UnlikeTweet,
 };
