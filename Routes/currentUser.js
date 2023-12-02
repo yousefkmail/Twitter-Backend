@@ -10,6 +10,7 @@ router.get("/current", async (req, res) => {
   const user = req.user;
   const result = await usermodel.findById(req.user).select("-password");
   result.toObject();
+  console.log(result);
   res.status(200).json({ user: { ...result.toObject() } });
 });
 
