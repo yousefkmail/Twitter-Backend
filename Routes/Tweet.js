@@ -8,6 +8,8 @@ const {
   UpdateTweet,
   getTweets,
   UnlikeTweet,
+  getTweet,
+  getComments,
 } = require("../Controllers/TweetColtroller");
 const { IsUserAuthenticated } = require("../Controllers/AuthController");
 
@@ -19,8 +21,10 @@ router.delete("/delete/:id", DeleteTweet);
 
 router.patch("/edit/:id", UpdateTweet);
 
-router.get("/get", getTweets);
+router.get("/get/:page/:size", getTweets);
+router.get("/get/:id", getTweet);
 router.post("/like/:id", LikeTweet);
 router.post("/unlike/:id", UnlikeTweet);
+router.get("/comment/get/:id", getComments);
 
 module.exports = router;
