@@ -42,7 +42,6 @@ const tweetSchema = new Schema(
 
 tweetSchema.methods.like = async function (PersonId) {
   const userid = new mongoose.Types.ObjectId(PersonId);
-  console.log(PersonId);
   var bool = false;
   for (let i = 0; i < this.Likes.length; i++) {
     if (this.Likes[i].equals(userid)) {
