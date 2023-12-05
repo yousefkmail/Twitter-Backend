@@ -11,20 +11,20 @@ const Login = async (req, res) => {
     const targetuser = await user.findOne({ email });
 
     if (!targetuser) {
-      res.status(400).json({ Error: "No user with this email" });
-      return;
+      throw new FieldError("email", "email not found");
     }
     const match = await bcrypt.compare(password, targetuser.password);
 
     if (!match) {
-      res.status(400).json({ Error: "Password is incorrect" });
-      return;
+      throw new FieldError("password", "Password is incorrect");
     }
     const token = CreateToken(targetuser._id);
 
     res.status(200).json({ email, token, profilePic: targetuser.icon });
   } catch (error) {
-    res.status(400).json({ Error: error.message });
+    res
+      .status(400)
+      .json({ Error: { field: error.field, message: error.message } });
   }
 };
 
