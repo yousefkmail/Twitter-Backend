@@ -5,7 +5,6 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const Login = async (req, res) => {
-  console.log("logging in");
   const { email, password } = req.body;
 
   try {
@@ -75,7 +74,6 @@ const Signup = async (req, res) => {
 
     res.status(200).json({ email, token });
   } catch (error) {
-    console.log(error);
     res
       .status(400)
       .json({ Error: { field: error.field, message: error.message } });

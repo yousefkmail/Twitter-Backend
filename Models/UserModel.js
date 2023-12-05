@@ -7,48 +7,53 @@ const userStateEnum = {
   OPTION_B: "Banned",
 };
 
-const UserSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
+const UserSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
 
-  dateOfBirth: {
-    type: Date,
-    // required: true,
-  },
+    dateOfBirth: {
+      type: Date,
+      // required: true,
+    },
 
-  email: {
-    type: String,
-    required: true,
-  },
+    email: {
+      type: String,
+      required: true,
+    },
 
-  password: {
-    type: String,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  icon: {
-    type: String,
-  },
+    password: {
+      type: String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    icon: {
+      type: String,
+    },
+    coverImage: {
+      type: String,
+    },
+    following: {
+      type: [mongoose.Types.ObjectId],
+      ref: "User",
+    },
 
-  following: {
-    type: [mongoose.Types.ObjectId],
-    ref: "User",
+    followers: {
+      type: [mongoose.Types.ObjectId],
+      ref: "User",
+    },
+    blocks: {
+      type: [mongoose.Types.ObjectId],
+      ref: "User",
+    },
   },
-
-  followers: {
-    type: [mongoose.Types.ObjectId],
-    ref: "User",
-  },
-  blocks: {
-    type: [mongoose.Types.ObjectId],
-    ref: "User",
-  },
-});
+  { timestamps: true }
+);
 
 UserSchema.methods.follow = async function (PersonId) {
   const userid = new mongoose.Types.ObjectId(PersonId);
@@ -65,8 +70,6 @@ UserSchema.methods.follow = async function (PersonId) {
   } else {
     throw Error("User already followed");
   }
-
-  console.log("Hey");
 };
 
 UserSchema.methods.unFollow = async function (PersonId) {
@@ -102,8 +105,6 @@ UserSchema.methods.block = async function (PersonId) {
   } else {
     throw Error("User already blocked");
   }
-
-  console.log("Hey");
 };
 
 UserSchema.methods.unBlock = async function (PersonId) {

@@ -8,8 +8,6 @@ const { ReadHashtags } = require("../Utils/Hashtags");
 const PostNewTweet = async (req, res) => {
   const { contentText, superTweet } = req.body;
 
-  console.log(superTweet);
-
   try {
     const images = [];
 
@@ -22,7 +20,6 @@ const PostNewTweet = async (req, res) => {
     if (req.files) {
       const keys = Object.keys(req.files);
       for (i = 0; i < keys.length; i++) {
-        console.log(req.files[keys[i]].name);
         const image = await UploadImageTofirebase(
           `image${i}`,
           data.id,
@@ -100,7 +97,6 @@ const DeleteTweet = async (req, res) => {
 
 const getTweets = async (req, res) => {
   const { page, size } = req.params;
-  console.log(page, size);
   try {
     const tweets = await TweetModel.find({
       isDeleted: false,
@@ -127,7 +123,6 @@ const getTweets = async (req, res) => {
 
 const getTweet = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   try {
     const tweet = await TweetModel.findOne({

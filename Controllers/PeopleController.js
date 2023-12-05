@@ -8,7 +8,7 @@ const GetRecommendedAccounts = async (req, res) => {
     const array = following.following;
     const accs = await user
       .find({ _id: { $nin: array, $ne: req.user._id } })
-      .limit(3)
+      .limit(4)
       .select("_id name icon");
     res.status(200).json({ recAccounts: accs });
   } catch (e) {
