@@ -7,11 +7,15 @@ const TweetModel = require("../Models/TweetModel");
 router.use(IsUserAuthenticated);
 
 router.get("/current", async (req, res) => {
-  const user = req.user;
-  const result = await usermodel.findById(req.user).select("-password");
-  result.toObject();
-  console.log(result);
-  res.status(200).json({ user: { ...result.toObject() } });
+  try {
+    const user = req.user;
+    const result = await usermodel.findById(req.user).select("-password");
+    result.toObject();
+    console.log(result);
+    res.status(200).json({ user: { ...result.toObject() } });
+  } catch (error) {
+    res.status(400).json({ user: "not found " });
+  }
 });
 
 router.post("/edit", async (req, res) => {
