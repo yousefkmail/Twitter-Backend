@@ -10,11 +10,19 @@ router.get("/current", async (req, res) => {
   try {
     const user = req.user;
     const result = await usermodel.findById(req.user).select("-password");
-    result.toObject();
-    console.log(result);
     res.status(200).json({ user: { ...result.toObject() } });
   } catch (error) {
     res.status(400).json({ user: "not found " });
+  }
+});
+
+router.get("/get/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const obj = await usermodel.findById(id).select("-password");
+    res.status(200).json({ user: obj.toObject() });
+  } catch (error) {
+    res.status(400).json({ user: "not found" });
   }
 });
 

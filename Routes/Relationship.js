@@ -2,20 +2,20 @@ const express = require("express");
 const usermodel = require("../Models/UserModel");
 const { IsUserAuthenticated } = require("../Controllers/AuthController");
 const router = express.Router();
-
+const FollowModel = require("../Models/FollowModel");
 router.use(IsUserAuthenticated);
 
 router.patch("/follow", async (req, res) => {
   const { user, followstatus } = req.body;
-  const userr = await usermodel.findById(req.user);
   try {
-    if (followstatus) await userr.follow(user);
-    else await userr.unFollow(user);
+    if (followstatus) {
+      await FollowModel.follow(req.user, user);
+      // await FollowModel.follow(req.user, user);
+    } else await FollowModel.unFollow(req.user, user);
   } catch (e) {
     res.status(400).json({ Error: e.message });
     return;
   }
-
   res.status(200).json({ followstatus: followstatus });
 });
 
@@ -36,12 +36,28 @@ router.patch("/block", async (req, res) => {
 
 router.get("/followings", async (req, res) => {
   try {
-    const following = await usermodel
-      .findById(req.user)
-      .select("following")
-      .populate({ path: "following", select: "_id name email" });
+    const ids = await FollowModel.find({
+      $or: [{ sender: req.user }, { state: "friend", receiver: req.user }],
+    });
 
-    res.status(200).json({ following: following.following });
+    const array = ids.map((item) => {
+      if (req.user !== item.sender) return item.receiver;
+      else return item.sender;
+    });
+
+    console.log(array);
+    const users = await usermodel
+      .find({ _id: { $in: array }, isActive: true })
+      .select("-password -isActive");
+    const array1 = users.map((item) => {
+      return {
+        ...item.toObject(),
+        isFollower: ids.includes((item) => item.state === "friend"),
+        isFollowing: true,
+      };
+    });
+
+    res.status(200).json({ users: array1 });
   } catch (e) {
     res.status(400).json({ Error: e.message });
   }
@@ -49,12 +65,27 @@ router.get("/followings", async (req, res) => {
 
 router.get("/followers", async (req, res) => {
   try {
-    const followers = await usermodel
-      .findById(req.user)
-      .select("followers")
-      .populate({ path: "followers", select: "_id name email" });
+    const ids = await FollowModel.find({
+      $or: [{ receiver: req.user }, { state: "friend", sender: req.user }],
+    });
 
-    res.status(200).json({ followers: followers.followers });
+    const array = ids.map((item) => {
+      if (req.user === item.sender) return item.receiver;
+      else return item.sender;
+    });
+
+    const users = await usermodel
+      .find({ _id: { $in: array }, isActive: true })
+      .select("-password -isActive");
+    const array1 = users.map((item) => {
+      return {
+        ...item.toObject(),
+        isFollower: true,
+        isFollowing: ids.includes((item) => item.state === "friend"),
+      };
+    });
+
+    res.status(200).json({ users: array1 });
   } catch (e) {
     res.status(400).json({ Error: e.message });
   }
