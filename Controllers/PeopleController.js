@@ -1,13 +1,16 @@
 const user = require("../Models/UserModel");
+const FollowModel = require("../Models/FollowModel");
 const GetRecommendedAccounts = async (req, res) => {
   try {
-    const following = await user
-      .findOne({ _id: req.user._id })
-      .select("following");
+    let followings = await FollowModel.find({ sender: req.user._id }).select(
+      "receiver -_id"
+    );
 
-    const array = following.following;
+    const fieldValues = followings.map((item) => item.receiver);
+
+    console.log(fieldValues);
     const accs = await user
-      .find({ _id: { $nin: array, $ne: req.user._id } })
+      .find({ _id: { $nin: fieldValues, $ne: req.user._id } })
       .limit(4)
       .select("_id name icon");
     res.status(200).json({ recAccounts: accs });

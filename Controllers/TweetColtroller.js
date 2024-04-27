@@ -97,25 +97,53 @@ const DeleteTweet = async (req, res) => {
 
 const getTweets = async (req, res) => {
   const { page, size } = req.params;
+  const { tweeterId } = req.query;
   try {
-    const tweets = await TweetModel.find({
-      isDeleted: false,
-      superTweet: undefined,
-    })
-      .skip(page * size)
-      .limit(size)
-      .populate({
-        path: "publisher",
-        select: "_id name email icon",
+    if (!tweeterId) {
+      const tweets = await TweetModel.find({
+        isDeleted: false,
+        superTweet: undefined,
       })
-      .sort({ createdAt: "desc" });
-    const tweetsarray = tweets.map((r) => r.toObject({ virtuals: true }));
+        .skip(page * size)
+        .limit(size)
+        .populate({
+          path: "publisher",
+          select: "_id name email icon",
+        })
+        .sort({ createdAt: "desc" });
+      const tweetsarray = tweets.map((r) => r.toObject({ virtuals: true }));
 
-    tweetsarray.forEach((tweet) => {
-      tweet.isLiked = tweet.Likes.some((item) => item._id.equals(req.user._id));
-      tweet.likesCount = tweet.Likes.length;
-    });
-    res.status(200).json({ tweets: tweetsarray });
+      tweetsarray.forEach((tweet) => {
+        tweet.isLiked = tweet.Likes.some((item) =>
+          item._id.equals(req.user._id)
+        );
+        tweet.likesCount = tweet.Likes.length;
+      });
+      res.status(200).json({ tweets: tweetsarray });
+    } else {
+      const tweets = await TweetModel.find({
+        isDeleted: false,
+        superTweet: undefined,
+      })
+        .where("publisherId")
+        .equals(tweeterId)
+        .skip(page * size)
+        .limit(size)
+        .populate({
+          path: "publisher",
+          select: "_id name email icon",
+        })
+        .sort({ createdAt: "desc" });
+      const tweetsarray = tweets.map((r) => r.toObject({ virtuals: true }));
+
+      tweetsarray.forEach((tweet) => {
+        tweet.isLiked = tweet.Likes.some((item) =>
+          item._id.equals(req.user._id)
+        );
+        tweet.likesCount = tweet.Likes.length;
+      });
+      res.status(200).json({ tweets: tweetsarray });
+    }
   } catch (Error) {
     res.status(400).json({ Error: Error });
   }
@@ -123,7 +151,7 @@ const getTweets = async (req, res) => {
 
 const getTweet = async (req, res) => {
   const { id } = req.params;
-
+  const { tweeterId } = req.query;
   try {
     const tweet = await TweetModel.findOne({
       _id: id,
