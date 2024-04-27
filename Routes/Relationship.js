@@ -34,14 +34,15 @@ router.patch("/block", async (req, res) => {
   res.status(200).json({ blockStatus: blockStatus });
 });
 
-router.get("/followings", async (req, res) => {
+router.get("/followings/:id", async (req, res) => {
+  const { id } = req.params;
   try {
     const ids = await FollowModel.find({
-      $or: [{ sender: req.user }, { state: "friend", receiver: req.user }],
+      $or: [{ sender: id }, { state: "friend", receiver: id }],
     });
 
     const array = ids.map((item) => {
-      if (req.user !== item.sender) return item.receiver;
+      if (id !== item.sender) return item.receiver;
       else return item.sender;
     });
 
@@ -63,14 +64,15 @@ router.get("/followings", async (req, res) => {
   }
 });
 
-router.get("/followers", async (req, res) => {
+router.get("/followers/:id", async (req, res) => {
+  const { id } = req.params;
   try {
     const ids = await FollowModel.find({
-      $or: [{ receiver: req.user }, { state: "friend", sender: req.user }],
+      $or: [{ receiver: id }, { state: "friend", sender: id }],
     });
 
     const array = ids.map((item) => {
-      if (req.user === item.sender) return item.receiver;
+      if (id === item.sender) return item.receiver;
       else return item.sender;
     });
 
